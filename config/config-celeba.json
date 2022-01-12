@@ -1,0 +1,30 @@
+{
+  "training": {
+    "epochs": 2,
+    "batch_size": 4,
+    "learning_rate": 0.0001,
+    "beta1": 0.01,
+    "beta2": 0.999,
+    "n_workers": 0
+  },
+  "generator": {
+    "latent_vector": 100,
+    "feature_map": 64,
+    "output_channel": 3,
+    "multipliers": [8, 4, 2, 1]
+  },
+  "transform": {
+    "image_size": 64,
+    "mean": [0.5, 0.5, 0.5],
+    "std": [0.5, 0.5,0.5]
+  },
+  "discriminator": {
+    "feature_map": 64,
+    "output_channel": 1,
+    "input_channel": 3,
+    "multipliers": [8, 4, 2, 1]
+  },
+  "dataset": {
+    "path": "./Data/"
+  }
+}
