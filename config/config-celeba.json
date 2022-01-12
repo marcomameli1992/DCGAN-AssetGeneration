@@ -5,7 +5,9 @@
     "learning_rate": 0.0001,
     "beta1": 0.01,
     "beta2": 0.999,
-    "n_workers": 0
+    "n_workers": 0,
+    "information_step": 25,
+    "image_step": 50
   },
   "generator": {
     "latent_vector": 100,
