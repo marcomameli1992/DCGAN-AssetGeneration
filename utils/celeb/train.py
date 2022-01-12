@@ -15,10 +15,13 @@ from neptune.new.types import File as nFile
 
 def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_model:nn.Module, tracking=None):
     # activate tracking for model files
-    if tracking is not None:
+    if tracking is not None and config['saving']['neptune']:
         tracking['train/models'].track_files(config['saving']['base_path'])
     # device definition
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # move model to device
+    discriminator_model.to(device)
+    generator_model.to(device)
     # initialization loss
     criterion = nn.BCELoss()
     # creation of the noise input
