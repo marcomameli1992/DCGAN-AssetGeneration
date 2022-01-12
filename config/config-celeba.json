@@ -30,6 +30,7 @@
     "path": "./Data/"
   },
   "saving": {
-    "base_path": "./save_models"
+    "base_path": "./save_models",
+    "neptune": false
   }
 }
