@@ -41,6 +41,7 @@ if args.neptune:
             project=config_neptune['neptune']['project'],
             api_token=config_neptune['neptune']['token'],
         )
+        run.sync()
         run['parameters/train'] = config_parameter['training']
         run['parameter/generator'] = config_parameter['generator']
         run['parameter/discriminator'] = config_parameter['discriminator']
