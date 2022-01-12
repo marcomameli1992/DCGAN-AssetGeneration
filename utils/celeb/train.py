@@ -2,6 +2,7 @@
 Training function
 Created by Marco Mameli
 """
+import os
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets as Dataset
@@ -100,4 +101,15 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
                 image_list.append(image)
                 if tracking is not None:
                     tracking["train/generated_grid_image"].log(nFile.as_image(image))
+
+                print("Saving Model..")
+                generator_folder = os.path.join(config['saving']['base_path'], 'generator')
+                discriminator_folder = os.path.join(config['saving']['base_path'], 'discriminator')
+                os.makedirs(generator_folder, exist_ok=True)
+                os.makedirs(discriminator_folder, exist_ok=True)
+                generator_path = os.path.join(generator_folder, "generator.pt")
+                discriminator_path = os.path.join(discriminator_folder, "discriminator.pt")
+                torch.save(generator_model.state_dict(), generator_path)
+                torch.save(discriminator_model.state_dict(), discriminator_path)
+                tracking['train/models'].track_files(config['saving']['base_path'])
             iters += 1

@@ -28,5 +28,8 @@
   },
   "dataset": {
     "path": "./Data/"
+  },
+  "saving": {
+    "base_path": "./save_models"
   }
 }
