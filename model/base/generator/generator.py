@@ -7,7 +7,7 @@ from torch import nn
 
 class Generator(nn.Module):
     def __init__(self, input_channel:int, feature_map:int, output_channel:int, multipliers:list):
-        super.__init__(Generator, self).__init__()
+        super(Generator, self).__init__()
         # Definition of the architecture
         self.conv_transpose1 = nn.ConvTranspose2d(in_channels=input_channel, out_channels=feature_map * multipliers[0], kernel_size=4, stride=1, padding=0, bias=True)
         self.batch_norm1 = nn.BatchNorm2d(feature_map * multipliers[0])
