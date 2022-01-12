@@ -14,6 +14,9 @@ import numpy as np
 from neptune.new.types import File as nFile
 
 def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_model:nn.Module, tracking=None):
+    # activate tracking for model files
+    if tracking is not None:
+        tracking['train/models'].track_files(config['saving']['base_path'])
     # device definition
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     # initialization loss
@@ -107,9 +110,9 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
                 discriminator_folder = os.path.join(config['saving']['base_path'], 'discriminator')
                 os.makedirs(generator_folder, exist_ok=True)
                 os.makedirs(discriminator_folder, exist_ok=True)
-                generator_path = os.path.join(generator_folder, "generator.pt")
-                discriminator_path = os.path.join(discriminator_folder, "discriminator.pt")
+                generator_path = os.path.join(generator_folder, f"generator-{epoch}-{iters}.pt")
+                discriminator_path = os.path.join(discriminator_folder, f"discriminator-{epoch}-{iters}.pt")
                 torch.save(generator_model.state_dict(), generator_path)
                 torch.save(discriminator_model.state_dict(), discriminator_path)
-                tracking['train/models'].track_files(config['saving']['base_path'])
+
             iters += 1
