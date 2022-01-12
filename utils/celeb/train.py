@@ -5,11 +5,14 @@ Created by Marco Mameli
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets as Dataset
+import torchvision.utils as vutils
 from torch import nn
 from torch import optim
 from tqdm import tqdm, trange
+import numpy as np
+from neptune.new.types import File as nFile
 
-def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_model:nn.Module):
+def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_model:nn.Module, tracking=None):
     # device definition
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     # initialization loss
@@ -56,7 +59,7 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
             discriminator_error_fake.backward()
             D_G_z1 = output.mean().item()
             # Compute error of D as sum over the fake and real batch
-            discrimator_error_total = discriminator_error_fake + discriminator_error_real
+            discriminator_error_total = discriminator_error_fake + discriminator_error_real
             # update the discriminator
             discriminator_optimizer.step()
 
@@ -73,4 +76,28 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
             D_G_z2 = output.mean().item()
             # Update generator
             generator_optimizer.step()
-            
+
+            # Memorize data for plotting if tracking is not active
+            generator_losses.append(generator_error.item())
+            discriminator_losses.append(discriminator_error_total.item())
+            # Give information about the state of the training
+            if i % config['training']['information_step'] == 0:
+                print(f"Epoch:{epoch}/{config['training']['epochs']}\nIteration:{i}/{len(train_loader)}\nDiscriminator Loss:\t{discriminator_error_total.item()}\nGenerator Loss:\t\t{generator_error.item()}")
+                print(f"Distribution: \tD(x): {D_x}\n\t\t\t\tD(G(z)): {D_G_z1}/{D_G_z2}")
+
+            if tracking is not None:
+                tracking["train/loss/generator"].log(generator_error.item())
+                tracking["train/loss/discriminator/total"].log(discriminator_error_total.item())
+                tracking["train/loss/discriminator/real"].log(discriminator_error_real.item())
+                tracking["train/loss/discriminator/fake"].log(discriminator_error_fake.item())
+                tracking["train/distribution/discriminator/D(x)"].log(D_x)
+                tracking["train/distribution/discriminator/D(G(z))"].log(D_G_z1/D_G_z2)
+            # Saving generated image
+            if (iters % config['training']['image_step'] == 0) or ((epoch == config['training']['epochs'] - 1) and (i == len(train_loader) - 1)):
+                with torch.no_grad():
+                    fake = generator_model(fixed_noise).detach().cpu()
+                image = np.transpose(vutils.make_grid(fake, padding=2, normalize=True).numpy(), (1,2,0))
+                image_list.append(image)
+                if tracking is not None:
+                    tracking["train/generated_grid_image"].log(nFile.as_image(image))
+            iters += 1
