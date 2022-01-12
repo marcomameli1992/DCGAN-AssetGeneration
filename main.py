@@ -6,8 +6,13 @@ from model.base.discriminator import discriminator
 from model.base.generator import generator
 from utils.celeb.train import train
 from utils.initilization import weights_init
+
+import neptune.new as neptune
+
 parser = argparse.ArgumentParser()
 parser.add_argument('--configuration_file', '-cf', required=True, help="Represent the path for configuration file.")
+parser.add_argument('--neptune', '-n', required=False, action='store_true', help="The activation of the neptune storing experiment")
+parser.add_argument('--neptune_config', '-nc', type=str, required=False, help="The path for the configuration file for the neptune using")
 args = parser.parse_args()
 
 with open(args.configuration_file, 'r') as config_file:
@@ -25,5 +30,25 @@ generator_model = generator.Generator(input_channel=generator_parameter['latent_
 # Init the model weight
 generator_model.apply(weights_init)
 discriminator_model.apply(weights_init)
+
+# Init neptune
+run = None
+if args.neptune:
+    if args.neptune_config is not None:
+        with open(args.neptune_config, 'r') as config_file:
+            config_neptune = json.load(config_file)
+        run = neptune.init(
+            project=config_neptune['neptune']['project'],
+            api_token=config_neptune['neptune']['token'],
+        )
+        run['parameters/train'] = config_parameter['training']
+        run['parameter/generator'] = config_parameter['generator']
+        run['parameter/discriminator'] = config_parameter['discriminator']
+        run['parameter/transform'] = config_parameter['transform']
+    else:
+        raise argparse.ArgumentError("Please provide the the path for the neptune configuration if it is active")
+
+
+
 # Training
-train(config=config_parameter, dataset=dataset, generator_model=generator_model, discriminator_model=discriminator_model)
+train(config=config_parameter, dataset=dataset, generator_model=generator_model, discriminator_model=discriminator_model, tracking=run)
