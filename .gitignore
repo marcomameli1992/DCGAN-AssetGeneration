@@ -125,3 +125,5 @@ dmypy.json
 
 .idea/
 /Data/celeba/
+
+.neptune/async/3e3ad3b5-c95f-43ba-b0bb-4823e66a20f0/exec-0-2022-01-12_12.10.19.074412/container_type
