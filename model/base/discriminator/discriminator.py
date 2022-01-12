@@ -20,7 +20,7 @@ class Discriminator(nn.Module):
         self.activation3 = nn.LeakyReLU(negative_slope=0.2)
         self.conv4 = nn.Conv2d(in_channels=feature_map * multipliers[2], out_channels=feature_map * multipliers[3],
                                kernel_size=4, stride=2, padding=1, bias=False)
-        self.batch_norm4 = nn.BatchNorm2d(num_features=feature_map * multipliers[1])
+        self.batch_norm4 = nn.BatchNorm2d(num_features=feature_map * multipliers[3])
         self.activation4 = nn.LeakyReLU(negative_slope=0.2)
         self.conv5 = nn.Conv2d(in_channels=feature_map * multipliers[3], out_channels=output_channel,
                                kernel_size=4, stride=1, padding=0, bias=False)
