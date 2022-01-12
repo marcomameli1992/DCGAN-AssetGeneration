@@ -108,7 +108,7 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
                 if tracking is not None:
                     tracking["train/generated_grid_image"].log(nFile.as_image(image))
 
-                print("Saving Model..")
+                print("Saving Model...")
                 generator_folder = os.path.join(config['saving']['base_path'], 'generator')
                 discriminator_folder = os.path.join(config['saving']['base_path'], 'discriminator')
                 os.makedirs(generator_folder, exist_ok=True)
