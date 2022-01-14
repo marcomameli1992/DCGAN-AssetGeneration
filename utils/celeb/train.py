@@ -30,8 +30,8 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
     real_label = 1.0
     fake_label = 0.0
     # Setup optimizer for the models
-    discriminator_optimizer = optim.Adam(discriminator_model.parameters(), lr=config['training']['learning_rate'], betas=(config['training']['beta1'], config['training']['beta2']))
-    generator_optimizer = optim.Adam(generator_model.parameters(), lr=config['training']['learning_rate'], betas=(config['training']['beta1'], config['training']['beta2']))
+    discriminator_optimizer = optim.Adam(discriminator_model.parameters(), lr=config['training']['learning_rate'], betas=(config['training']['beta1'], config['training']['beta2']), weight_decay=config['training']['weight_decay']/config['training']['epochs'], amsgrad=config['training']['amsgrad_activate'])
+    generator_optimizer = optim.Adam(generator_model.parameters(), lr=config['training']['learning_rate'], betas=(config['training']['beta1'], config['training']['beta2']), weight_decay=config['training']['weight_decay']/config['training']['epochs'], amsgrad=config['training']['amsgrad_activate'])
     # create train loader
     train_loader = DataLoader(dataset=dataset, batch_size=config['training']['batch_size'], shuffle=True, num_workers=config['training']['n_workers'])
     image_list = []
