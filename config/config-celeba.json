@@ -7,7 +7,9 @@
     "beta2": 0.999,
     "n_workers": 0,
     "information_step": 25,
-    "image_step": 50
+    "image_step": 50,
+    "weight_decay": 0.002,
+    "amsgrad_activate": true
   },
   "generator": {
     "latent_vector": 100,
