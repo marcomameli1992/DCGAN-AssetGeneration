@@ -3,6 +3,7 @@ Training function
 Created by Marco Mameli
 """
 import os
+import glob
 import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets as Dataset
@@ -22,6 +23,15 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
     # move model to device
     discriminator_model.to(device)
     generator_model.to(device)
+    # loading model from file if continue
+    generator_folder = os.path.join(config['saving']['base_path'], 'generator')
+    discriminator_folder = os.path.join(config['saving']['base_path'], 'discriminator')
+    list_of_files = glob.glob(generator_folder + '/*.pt')
+    latest_generator = max(list_of_files, key=os.path.getctime)
+    list_of_files = glob.glob(discriminator_folder + '/*.pt')
+    latest_discriminator = max(list_of_files, key=os.path.getctime)
+    if config['trainign']['continue']:
+        generator_model.load_state_dict(torch.load())
     # initialization loss
     criterion = nn.BCELoss()
     # creation of the noise input
@@ -38,7 +48,7 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
     generator_losses = []
     discriminator_losses = []
     iters = 0
-    for epoch in trange(config['training']['epochs'], desc="Epoch"):
+    for epoch in tqdm(range(config['trainig']['start_epoch'], config['training']['epochs']), desc="Epoch"):
         for i, image in enumerate(tqdm(iterable=train_loader, desc='Training')):
             ## Train with all-real batch
             discriminator_model.zero_grad()
@@ -109,8 +119,6 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
                     tracking["train/generated_grid_image"].log(nFile.as_image(image))
 
                 print("Saving Model...")
-                generator_folder = os.path.join(config['saving']['base_path'], 'generator')
-                discriminator_folder = os.path.join(config['saving']['base_path'], 'discriminator')
                 os.makedirs(generator_folder, exist_ok=True)
                 os.makedirs(discriminator_folder, exist_ok=True)
                 generator_path = os.path.join(generator_folder, f"generator-{epoch}-{iters}.pt")
