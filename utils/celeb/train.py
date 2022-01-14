@@ -31,7 +31,8 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
     list_of_files = glob.glob(discriminator_folder + '/*.pt')
     latest_discriminator = max(list_of_files, key=os.path.getctime)
     if config['trainign']['continue']:
-        generator_model.load_state_dict(torch.load())
+        generator_model.load_state_dict(torch.load(latest_generator))
+        discriminator_model.load_state_dict(torch.load(latest_discriminator))
     # initialization loss
     criterion = nn.BCELoss()
     # creation of the noise input
@@ -47,6 +48,8 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
     image_list = []
     generator_losses = []
     discriminator_losses = []
+    generator_losses_best = 0
+    discriminator_losses_best = 0
     iters = 0
     for epoch in tqdm(range(config['trainig']['start_epoch'], config['training']['epochs']), desc="Epoch"):
         for i, image in enumerate(tqdm(iterable=train_loader, desc='Training')):
@@ -119,11 +122,19 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
                     tracking["train/generated_grid_image"].log(nFile.as_image(image))
 
                 print("Saving Model...")
+
                 os.makedirs(generator_folder, exist_ok=True)
                 os.makedirs(discriminator_folder, exist_ok=True)
                 generator_path = os.path.join(generator_folder, f"generator-{epoch}-{iters}.pt")
                 discriminator_path = os.path.join(discriminator_folder, f"discriminator-{epoch}-{iters}.pt")
                 torch.save(generator_model.state_dict(), generator_path)
                 torch.save(discriminator_model.state_dict(), discriminator_path)
-
+                if generator_losses_best == 0 or generator_losses_best >= generator_error.item():
+                    generator_losses_best = generator_error.item()
+                    generator_path = os.path.join(generator_folder, f"generator-best.pt")
+                    torch.save(generator_model.state_dict(), generator_path)
+                if discriminator_losses_best == 0 or discriminator_losses_best >= discriminator_error_total.item():
+                    discriminator_losses_best = discriminator_error_total.item()
+                    discriminator_path = os.path.join(discriminator_folder, f"discriminator-best.pt")
+                    torch.save(discriminator_model.state_dict(), discriminator_path)
             iters += 1
