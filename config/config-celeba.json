@@ -1,5 +1,6 @@
 {
   "training": {
+    "start_epoch": 0,
     "epochs": 2,
     "batch_size": 4,
     "learning_rate": 0.0001,
@@ -9,7 +10,8 @@
     "information_step": 25,
     "image_step": 50,
     "weight_decay": 0.002,
-    "amsgrad_activate": true
+    "amsgrad_activate": true,
+    "continue": true
   },
   "generator": {
     "latent_vector": 100,
