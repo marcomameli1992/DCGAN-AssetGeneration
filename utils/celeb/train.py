@@ -51,7 +51,7 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
     generator_losses_best = 0
     discriminator_losses_best = 0
     iters = 0
-    for epoch in tqdm(range(config['trainig']['start_epoch'], config['training']['epochs']), desc="Epoch"):
+    for epoch in tqdm(range(config['training']['start_epoch'], config['training']['epochs']), desc="Epoch"):
         for i, image in enumerate(tqdm(iterable=train_loader, desc='Training')):
             ## Train with all-real batch
             discriminator_model.zero_grad()
