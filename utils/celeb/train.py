@@ -26,7 +26,7 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
     # loading model from file if continue
     generator_folder = os.path.join(config['saving']['base_path'], 'generator')
     discriminator_folder = os.path.join(config['saving']['base_path'], 'discriminator')
-    if config['trainign']['continue']:
+    if config['training']['continue']:
         list_of_files = glob.glob(generator_folder + '/*.pt')
         latest_generator = max(list_of_files, key=os.path.getctime)
         list_of_files = glob.glob(discriminator_folder + '/*.pt')
