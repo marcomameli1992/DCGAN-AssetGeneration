@@ -26,11 +26,11 @@ def train(config, dataset:Dataset, generator_model:nn.Module, discriminator_mode
     # loading model from file if continue
     generator_folder = os.path.join(config['saving']['base_path'], 'generator')
     discriminator_folder = os.path.join(config['saving']['base_path'], 'discriminator')
-    list_of_files = glob.glob(generator_folder + '/*.pt')
-    latest_generator = max(list_of_files, key=os.path.getctime)
-    list_of_files = glob.glob(discriminator_folder + '/*.pt')
-    latest_discriminator = max(list_of_files, key=os.path.getctime)
     if config['trainign']['continue']:
+        list_of_files = glob.glob(generator_folder + '/*.pt')
+        latest_generator = max(list_of_files, key=os.path.getctime)
+        list_of_files = glob.glob(discriminator_folder + '/*.pt')
+        latest_discriminator = max(list_of_files, key=os.path.getctime)
         generator_model.load_state_dict(torch.load(latest_generator))
         discriminator_model.load_state_dict(torch.load(latest_discriminator))
     # initialization loss
